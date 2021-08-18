@@ -33,7 +33,45 @@ _Herramientas utilizadas para el desarrollo de este modulo._
 
 ## Ejemplos y modo de empleo.
 
-_Puedes consultar la carpeta / examples para observar como se utiliza el modulo._
+_Puedes consultar la carpeta 'examples' que contiene ejemplos de como funciona el modulo._
+
+_La manera de utilizar el modulo es la siguiente:_
+1. Importamos la libreria.
+```
+from rhonn import rhonn # Esto importa la arquitectura RHONN.
+from rhonn import activation # Esto importa funciones de activacion pre-establecidad.
+```
+2. Definimos nuestras variables iniciales (esta parde debe ir fuera del proceso iterativo de la simulacion)
+```
+# Inicializamos las entradas iniciales para W y Z
+Z1 = [0 ,0]
+W1 = [0 ,0]
+
+# Parametros iniciales para el Filtro Extendido de Kalman.
+P1 = 1 * (10**8)
+P2 = 1 * (10**2)
+P3 = 1 * (10**8)
+
+# Inicializamos nuestro objeto neurona.
+neurona_X1 =  rhonn(W1, Z1)
+# Inicializamos el filtro de Kalman extendido Interno de la neurona.
+neurona_X1.set_ekf(P1, Q1, R1, 0.5) 
+```
+
+3.- Durante el proceso iterativo se deben actualizar los valores leidos por la neurona y a su vez enviar el valor medido sobre el cual buscamos aproximar la prediccion.
+```
+while True:
+    # Donde x11[k] representa en este ejemplo el valor actual que deseamos aproximar y x12[k] representa otro parametro del sistema, ambos mediciones del sistema.
+    
+    # S(x11) , S(x12)
+    entradas = [activation.soft_sigmoid(x11[k]), activation.soft_sigmoid(x12[k])]
+    # Actualizamos los estados internos de la neurona.
+    neurona_X1.update(entradas, x11[k])
+    # Obtenemos el valor que predice el modelo.
+    prediccion = neurona_X1.predict()
+```
+
+_Para mas informacion referente a los parametros, metodo de empleo y funcionamiento del modulo consultar la pagina de documentacion en el siguiente [Link]()._
 ## Autores ✒️
 
 * **Alfredo Aguiar Arce.** - *Simulacion y programacion.*
@@ -44,4 +82,4 @@ _Puedes consultar la carpeta / examples para observar como se utiliza el modulo.
 Este proyecto está bajo la Licencia (MIT License) - mira el archivo [LICENSE.md](LICENSE.md) para detalles.
 
 ---
-⌨️ con ❤️ por [Alfredo Aguiar Arce](www.alfredoagrar.com)
+Por [Alfredo Aguiar Arce](www.alfredoagrar.com), 2021.
