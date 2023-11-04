@@ -12,10 +12,11 @@ state EKF            :   State of the weights (bias) for each input Z.
 """
 
 import numpy as np
+import math
 import ekf
 
-class RHONN:
-    def __init__(self, weights: int, zinputs: int):
+class rhonn:
+    def __init__(self, weights, zinputs):
         """
         Creates a neuron object based on RHONN.
         Inputs
@@ -32,11 +33,11 @@ class RHONN:
         self.weights = np.array([weights]).T
         self.zinputs = np.array([zinputs])
         # init the ekf for the neuron
-        self.ekf = EKF(self.weights, self.zinputs)
+        self.ekf = ekf.ekf(self.weights, self.zinputs)
         # init the prediction as 0.
         self.prediction = 0
 
-    def set_ekf(self, P_init : float =0.001, Q_init : float =0.001, R_init : float =0.001, FO: float=1):
+    def set_ekf(self, P_init  =0.001, Q_init  =0.001, R_init  =0.001, FO=1):
         """
         Init the Extended Kalman Filter.
         Inputs

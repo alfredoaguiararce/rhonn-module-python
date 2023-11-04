@@ -2,7 +2,7 @@
 import numpy as np
 import math
 
-class EKF: 
+class ekf: 
     """
     - NOTES - In this case for Extended Kalman Filter W, H, P, R, Q represent the values of k-th
     Wk, Pk represent the values of k + 1 : 
@@ -44,7 +44,7 @@ class EKF:
         self.error = 0
         self.fo = FO
 
-    def init_filter(self, size_input: int, P_init, Q_init, R_init, FO):
+    def init_filter(self, size_input, P_init, Q_init, R_init, FO):
         # Initialize EKF parameters
         # Declare an array of [0... n] elements where, each element are equal to init values.
         parray = np.array([P_init for x in range(0, size_input)])
