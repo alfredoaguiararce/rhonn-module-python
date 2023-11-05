@@ -1,6 +1,5 @@
 
 import numpy as np
-import math
 
 class ekf: 
     """
@@ -21,7 +20,7 @@ class ekf:
     - FO - is the forgettering factor if FO = 1 The model FKEFO transforms in a normal form of FKE.
     """
 
-    def __init__(self, weights, H, FO=1):
+    def __init__(self, weights: np.ndarray, H : np.ndarray, FO: float=1):
         """
         Initialize the Extended Kalman Filter for the i-th neuron.
         Inputs
@@ -32,17 +31,17 @@ class ekf:
         if np.size(weights) != np.size(H) or np.size(weights) <= 0:
             raise ValueError("Invalid dimensions for weights and H")
 
-        self.Li = np.size(weights)
-        self.m = 1
-        self.H = H
-        self.K = np.array(np.zeros((self.Li, self.m)))
-        self.M = np.array(np.zeros((self.m, self.m)))
-        self.P = np.array(np.zeros((self.Li, self.Li)))
-        self.Q = np.array(np.zeros((self.Li, self.Li)))
-        self.R = np.array(np.zeros((self.m, self.m)))
-        self.W = weights
-        self.error = 0
-        self.fo = FO
+        self.Li : int = np.size(weights)
+        self.m : int = 1
+        self.H : np.ndarray = H
+        self.K : np.ndarray = np.array(np.zeros((self.Li, self.m)))
+        self.M : np.ndarray = np.array(np.zeros((self.m, self.m)))
+        self.P : np.ndarray = np.array(np.zeros((self.Li, self.Li)))
+        self.Q : np.ndarray = np.array(np.zeros((self.Li, self.Li)))
+        self.R : np.ndarray = np.array(np.zeros((self.m, self.m)))
+        self.W : np.ndarray = weights
+        self.error : float= 0
+        self.fo : float= FO
 
     def init_filter(self, size_input, P_init, Q_init, R_init, FO):
         # Initialize EKF parameters
@@ -62,7 +61,7 @@ class ekf:
         self.set_R(R0)
         self.set_FO(FO)
 
-    def update_weights(self, H):
+    def update_weights(self, H: np.ndarray):
         """
         Update the values of bias W
         Inputs
@@ -75,31 +74,29 @@ class ekf:
         # Declare the new value of H  
         self.H = H
 
-        # M(k) = R * FO + H * P * H.T
-        self.M = np.dot(self.R, self.fo) + (np.dot(self.H, np.dot(self.P, self.H.T)))
+        # (N-DIMENSIONAL)
+        # M(k) = R * FO + H * P * H.T 
+        self.M  : np.ndarray = np.dot(self.R, self.fo) + (np.dot(self.H, np.dot(self.P, self.H.T)))
+
 
         num_rows, num_cols = self.M.shape
         if (num_rows == self.m) and (num_cols == self.m):
-            # K(k) = (P * H.T) / M
-            self.K = np.divide(np.dot(self.P, self.H.T), (self.M))
+            self.K = np.divide(np.dot(self.P, self.H.T), self.M)
         else:
             raise ValueError('something happend M', num_rows, num_cols)
 
 
-        num_rows, num_cols = self.K.shape
-        if (num_rows == self.Li) and (num_cols == self.m):
-            # W(k+1) = W(k) + K * error
-            # wk is the actual value of W before the ejecution W(k)
-            wk = self.W
-            self.W = wk + (np.dot(self.K, self.error))
-        else:
-            raise ValueError('something happend K')
+        # W(k+1) = W(k) + K * error
+        # wk is the actual value of W before the ejecution W(k)
+        wk: np.ndarray = self.W
+        self.W : np.ndarray = wk + self.K * self.error
+        self.W : np.ndarray = self.W.flatten()
 
 
         # P(k+1) = P(K) * FO - (K * FO * H * P(k)) + Q
         # pk is the actual value of P before the ejecution P(k).
-        pk = self.P
-        self.P = (np.dot(pk, 1 / self.fo)) - (np.dot( np.dot(self.K, 1/ self.fo), np.dot(self.H, pk))) + self.Q
+        pk : np.ndarray = self.P
+        self.P: np.ndarray = (np.dot(pk, 1 / self.fo)) - (self.K * (1/self.fo) * self.H * pk) + self.Q
 
         # Return the estimation of W.
         return self.W
