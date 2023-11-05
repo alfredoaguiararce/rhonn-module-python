@@ -222,7 +222,7 @@ for k in  range(N - 1):
     entradas3 = [soft_sigmoid(x[k]), soft_sigmoid(y[k])]
     neurona_X3.update(entradas3, phi[k])
     
-    print(neurona_X1.predict())
+
     x11_prediction.append(neurona_X1.predict())
     x12_prediction.append(neurona_X2.predict())
     x13_prediction.append(neurona_X3.predict())
@@ -232,7 +232,10 @@ for k in  range(N - 1):
 dim_img = 10
 plt.rcParams["figure.figsize"] = (dim_img,dim_img)
 figure, axis = plt.subplots(4, 2)
-  
+
+x[0] = [0]
+y[0] = [0]
+phi[0] = [0]
 # Para la grafica de la posicion X
 axis[0, 0].plot(t,x)
 axis[0, 0].set_title("Position X (MODELO CINEMATICO)")
@@ -264,3 +267,8 @@ axis[3, 1].set_title("Position phi (RHONN)")
 # Combine all the operations and display
 plt.show()
     
+# Posicion en X con 
+plt.plot(t, x, 'r') # Posicion en X por modelo cinematico
+plt.plot(t, x11_prediction, 'b', linestyle='dashed') # Posicion en X por RHONN con Factor de olvido 0.5
+# Combine all the operations and display
+plt.show()
